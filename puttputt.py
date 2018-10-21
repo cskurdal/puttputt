@@ -49,13 +49,10 @@ reverseMotor2 = False #Switch if motor turns the wrong way
 currMotor1Step = 0b1000
 currMotor2Step = 0b1000
 
-def runMotor1():
-    
+def runMotorThread(motor, start, maxtime):
     while (time.time() - start) <= maxtime:
         #TODO: maybe use queue based events as described here: https://www.raspberrypi.org/forums/viewtopic.php?t=178212
-        thread1 = Thread(target=moveSteps, args=(1, 1*stepsPerRev))
-        
-def runMotor2():
+        moveSteps(motor, 1*stepsPerRev))
     
 
 def main():
@@ -64,7 +61,9 @@ def main():
     parser = argparse.ArgumentParser(description='Pi Putt')
 
     parser.add_argument('mode', choices=['once', 'voice', 'loop'], default='once', help='run mode (default: once)')
-    parser.add_argument('maxtime', type=float, default=15, help='seconds to run (default: 15)')
+    parser.add_argument('maxtime', type=float, default=5, help='seconds to run (default: 5)')
+    parser.add_argument('delay1', type=float, default=0.0055, help='delay after each step of motor 1 (default: 0.0055s)')
+    parser.add_argument('delay2', type=float, default=0.0055, help='delay after each step of motor 2 (default: 0.0055s)')
     parser.add_argument('t1', type=float, default=0, help='the starting theta of motor 1 (default: 0)')
     parser.add_argument('t2', type=float, default=0, help='the starting theta of motor 2 (default: 0)')
     parser.add_argument('--setup', '-s', dest='setup', action='store_true', default=False, help='setup (default: False)')
@@ -77,6 +76,8 @@ def main():
     maxtime = args.maxtime
     t1 = args.t1
     t2 = args.t2
+	delay1 = args.delay1
+	delay2 = args.delay2
     
     print "Raspberry Pi" if isRpi else "NOT a Pi!"
     
@@ -84,8 +85,8 @@ def main():
     
     while (time.time() - start) <= maxtime:
         #TODO: maybe use queue based events as described here: https://www.raspberrypi.org/forums/viewtopic.php?t=178212
-        thread1 = Thread(target=moveSteps, args=(1, 1*stepsPerRev))
-        thread2 = Thread(target=moveSteps, args=(2, 1*stepsPerRev))
+        thread1 = Thread(target=runMotorThread, args=(1, start, maxtime))
+        thread2 = Thread(target=runMotorThread, args=(2, start, maxtime))
         
         thread1.start()
         thread2.start()
