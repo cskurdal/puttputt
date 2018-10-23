@@ -52,9 +52,9 @@ currMotor2Step = 0b1000
 def runMotorThread(motor, start, maxtime):
 	global stepsPerRev
 	
- 	while (time.time() - start) <= maxtime:
+	while (time.time() - start) <= maxtime:
         #TODO: maybe use queue based events as described here: https://www.raspberrypi.org/forums/viewtopic.php?t=178212
-        moveSteps(motor, 1*stepsPerRev))
+		moveSteps(motor, 1*stepsPerRev))
     
 
 def main():
