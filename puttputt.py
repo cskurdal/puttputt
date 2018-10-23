@@ -78,8 +78,8 @@ def main():
     maxtime = args.maxtime
     t1 = args.t1
     t2 = args.t2
-	delay1 = args.delay1
-	delay2 = args.delay2
+    delay1 = args.delay1
+    delay2 = args.delay2
     
     print "Raspberry Pi" if isRpi else "NOT a Pi!"
     
