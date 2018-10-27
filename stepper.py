@@ -8,11 +8,15 @@ class Stepper(Motor):
         
         if stepType == 'full':
             self.trajectory = [[1,0,1,0],[1,0,0,1],[0,1,0,1],[0,1,1,0]]
+        else stepType == 'single':
+            self.trajectory = [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]]
+        else:
+            raise Exception('invalid stepType')
         
         self.position = 0
         
         if len(pins) != 4:
-            raise Exception
+            raise Exception('pins must be length of 4')
         
         #Raspberry Pi GPIO Setup
         GPIO.setmode(GPIO.BCM)
