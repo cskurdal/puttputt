@@ -8,7 +8,7 @@ try:
 	import RPi.GPIO as GPIO
 	isRpi = True
 except ImportError:
-	print 'Not RaspberryPi'
+	print('Not RaspberryPi')
 	isRpi = False	
 
 if isRpi:
@@ -85,7 +85,7 @@ def main():
     
     args = parser.parse_args()
 		
-    print 'args:',	args
+    print('args:',	args)
     
     mode = args.mode
     maxtime = args.maxtime
@@ -94,7 +94,7 @@ def main():
     delay1 = args.delay1
     delay2 = args.delay2
     
-    print "Raspberry Pi" if isRpi else "NOT a Pi!"
+    print("Raspberry Pi" if isRpi else "NOT a Pi!")
     
     start = time.time()
     
@@ -228,9 +228,10 @@ if isRpi:
 try:
 	main()
 except Exception as e:
-	print e
+	print(e)
 finally:
 	if isRpi:
 		setStep1(0,0,0,0)
+        #TODO turn motor 2 off
 
     
