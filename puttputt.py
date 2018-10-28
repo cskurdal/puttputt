@@ -2,7 +2,7 @@
 
 import sys, math, time, argparse, random 
 from threading import Thread
-
+from stepper import Stepper
 
 try:
 	import RPi.GPIO as GPIO
@@ -40,7 +40,7 @@ if isRpi:
     
 #Constants
 stepsPerRev = 200 #Motor 1.8deg/step
-    
+
 delay1 = 0.0055
 delay2 = 0.0055
 reverseMotor1 = False #Switch if motor turns the wrong way
@@ -50,12 +50,25 @@ currMotor1Step = 0b1000
 currMotor2Step = 0b1000
 
 def runMotorThread(motor, start, maxtime):
-	global stepsPerRev
+	global stepsPerRev, delay1, delay2, reverseMotor1, reverseMotor2
 	
+    numStepsPerLoop = 1
+    delay = delay1
+    
+    #Reverse
+    if (motor.name == 'Stepper1' and reverseMotor1) or (motor.name == 'Stepper2' and reverseMotor2):
+        numStepsPerLoop *= -1
+    
+    #if stepper 2 then set delay2
+    if motor.name == 'Stepper2':
+        delay = delay2
+    
 	while (time.time() - start) <= maxtime:
         #TODO: maybe use queue based events as described here: https://www.raspberrypi.org/forums/viewtopic.php?t=178212
-		moveSteps(motor, 1*stepsPerRev)
+		#moveSteps(motor, 1*stepsPerRev)
+        motor.step(numStepsPerLoop, delay = delay, turnOff = False)
     
+    motor.turnOff()
 
 def main():
     global stepsPerRev, delay1, delay2, reverseMotor1, reverseMotor2
@@ -85,13 +98,16 @@ def main():
     
     start = time.time()
     
+    m1 = Stepper([14,15,23,24], 'Stepper1')
+    m2 = Stepper([4,17,27,22], 'Stepper2')
+
     while (time.time() - start) <= maxtime:
         #TODO: maybe use queue based events as described here: https://www.raspberrypi.org/forums/viewtopic.php?t=178212
-        thread1 = Thread(target=runMotorThread, args=(1, start, maxtime))
-        thread2 = Thread(target=runMotorThread, args=(2, start, maxtime))
+        thread1 = Thread(target=runMotorThread, args=(m1, start, maxtime))
+        #thread2 = Thread(target=runMotorThread, args=(m2, start, maxtime))
         
         thread1.start()
-        thread2.start()
+        #thread2.start()
     
 #---------------------------------------------------
 if isRpi:
