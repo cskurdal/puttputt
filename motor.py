@@ -1,6 +1,6 @@
 
 
-class Motor:
+class Motor(object):
     def __init__(self, pins = [], name = None, direction = 1):
         self._pins = pins
         self._name = name
