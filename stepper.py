@@ -47,3 +47,8 @@ class Stepper(Motor):
             for o in self.pins:
                 GPIO.output(o, 0)
         
+
+    def turnOff(self):
+        for o in self.pins:
+            GPIO.output(o, 0)
+            
