@@ -28,18 +28,18 @@ class Stepper(Motor):
     def step(self, steps, delay = 0.0055, turnOff = True):
         if steps > 0:
             for s in range(steps):
-                self.position = (self.position + s + len(self.trajectory)) % len(self.trajectory)
+                self._position = (self._position + s + len(self._trajectory)) % len(self._trajectory)
 
                 for o in range(len(self._pins)):
-                    GPIO.output(self._pins[o], self.trajectory[self.position][o])
+                    GPIO.output(self._pins[o], self._trajectory[self._position][o])
 
                 time.sleep(delay)
         else:            
             for s in list(reversed(range(steps))):
-                self.position = (self.position + s + len(self.trajectory)) % len(self.trajectory)
+                self._position = (self._position + s + len(self._trajectory)) % len(self._trajectory)
 
                 for o in range(len(self._pins)):
-                    GPIO.output(self._pins[o], self.trajectory[self.position][o])
+                    GPIO.output(self._pins[o], self._trajectory[self._position][o])
 
                 time.sleep(delay)
             
