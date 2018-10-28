@@ -52,7 +52,7 @@ currMotor2Step = 0b1000
 def runMotorThread(motor, start, maxtime):
     global stepsPerRev, delay1, delay2, reverseMotor1, reverseMotor2
 	
-    numStepsPerLoop = 200
+    numStepsPerLoop = 1
     delay = delay1
     
     #Reverse
