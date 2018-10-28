@@ -7,21 +7,21 @@ class Stepper(Motor):
         super().__init__(pins, name)      
         
         if stepType == 'full':
-            self.trajectory = [[1,0,1,0],[1,0,0,1],[0,1,0,1],[0,1,1,0]]
+            self._trajectory = [[1,0,1,0],[1,0,0,1],[0,1,0,1],[0,1,1,0]]
         else stepType == 'single':
-            self.trajectory = [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]]
+            self._trajectory = [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]]
         else:
             raise Exception('invalid stepType')
         
-        self.position = 0
+        self._position = 0
         
-        if len(pins) != 4:
+        if len(self._pins) != 4:
             raise Exception('pins must be length of 4')
         
         #Raspberry Pi GPIO Setup
         GPIO.setmode(GPIO.BCM)
 
-        for p in pins:
+        for p in self._pins:
             GPIO.setup(p, GPIO.OUT)
         
     #Modeled after: http://homepage.divms.uiowa.edu/~jones/step/midlevel.html
@@ -30,25 +30,25 @@ class Stepper(Motor):
             for s in range(steps):
                 self.position = (self.position + s + len(self.trajectory)) % len(self.trajectory)
 
-                for o in range(len(self.pins)):
-                    GPIO.output(self.pins[o], self.trajectory[self.position][o])
+                for o in range(len(self._pins)):
+                    GPIO.output(self._pins[o], self.trajectory[self.position][o])
 
                 time.sleep(delay)
         else:            
             for s in list(reversed(range(steps))):
                 self.position = (self.position + s + len(self.trajectory)) % len(self.trajectory)
 
-                for o in range(len(self.pins)):
-                    GPIO.output(self.pins[o], self.trajectory[self.position][o])
+                for o in range(len(self._pins)):
+                    GPIO.output(self._pins[o], self.trajectory[self.position][o])
 
                 time.sleep(delay)
             
         if turnOff:
-            for o in self.pins:
+            for o in self._pins:
                 GPIO.output(o, 0)
         
 
     def turnOff(self):
-        for o in self.pins:
+        for o in self._pins:
             GPIO.output(o, 0)
             
