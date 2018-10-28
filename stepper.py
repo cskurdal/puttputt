@@ -26,11 +26,24 @@ class Stepper(Motor):
         
     #Modeled after: http://homepage.divms.uiowa.edu/~jones/step/midlevel.html
     def step(self, steps, delay = 0.0055, turnOff = True):
-        for s in range(steps):
-            self.position = (self.position + s + len(self.trajectory)) % len(self.trajectory)
+        if steps > 0:
+            for s in range(steps):
+                self.position = (self.position + s + len(self.trajectory)) % len(self.trajectory)
+
+                for o in range(len(self.pins)):
+                    GPIO.output(self.pins[o], self.trajectory[self.position][o])
+
+                time.sleep(delay)
+        else:            
+            for s in list(reversed(range(steps))):
+                self.position = (self.position + s + len(self.trajectory)) % len(self.trajectory)
+
+                for o in range(len(self.pins)):
+                    GPIO.output(self.pins[o], self.trajectory[self.position][o])
+
+                time.sleep(delay)
             
-            for o in range(len(self.trajectory[self.position])):
-                GPIO.output(self.pins[o], self.trajectory[self.position][o])
-                
-            time.sleep(delay)
+        if turnOff:
+            for o in self.pins:
+                GPIO.output(o, 0)
         
