@@ -63,7 +63,7 @@ def runMotorThread(motor, start, maxtime):
     if motor.name == 'Stepper2':
         delay = delay2
     
-	while (time.time() - start) <= maxtime:
+    while (time.time() - start) <= maxtime:
         #TODO: maybe use queue based events as described here: https://www.raspberrypi.org/forums/viewtopic.php?t=178212
 		#moveSteps(motor, 1*stepsPerRev)
         motor.step(numStepsPerLoop, delay = delay, turnOff = False)
