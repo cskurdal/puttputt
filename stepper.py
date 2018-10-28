@@ -3,8 +3,8 @@ from motor import Motor
 import RPi.GPIO as GPIO
     
 class Stepper(Motor):
-    def __init__(self, pins, stepType = 'full'):
-        super().__init__(pins)
+    def __init__(self, pins, name = None, stepType = 'full'):
+        super().__init__(pins, name)      
         
         if stepType == 'full':
             self.trajectory = [[1,0,1,0],[1,0,0,1],[0,1,0,1],[0,1,1,0]]
