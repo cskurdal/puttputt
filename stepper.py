@@ -7,7 +7,8 @@ class Stepper(Motor):
         super().__init__(pins, name)      
         
         if stepType == 'full':
-            self._trajectory = [[1,0,1,0],[1,0,0,1],[0,1,0,1],[0,1,1,0]]
+            self._trajectory = [[1,0,1,0],[0,1,1,0],[0,1,0,1],[1,0,0,1]]
+            #self._trajectory = [[1,0,1,0],[1,0,0,1],[0,1,0,1],[0,1,1,0]]
         elif stepType == 'single':
             self._trajectory = [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]]
         else:
