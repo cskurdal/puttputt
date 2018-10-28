@@ -8,7 +8,7 @@ class Stepper(Motor):
         
         if stepType == 'full':
             self._trajectory = [[1,0,1,0],[1,0,0,1],[0,1,0,1],[0,1,1,0]]
-        else stepType == 'single':
+        elif stepType == 'single':
             self._trajectory = [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]]
         else:
             raise Exception('invalid stepType')
