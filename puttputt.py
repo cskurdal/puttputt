@@ -5,15 +5,15 @@ from threading import Thread
 from stepper import Stepper
 
 try:
-	import RPi.GPIO as GPIO
+    import RPi.GPIO as GPIO
 	
     #Raspberry Pi GPIO Setup
     GPIO.setmode(GPIO.BCM)
 	
-	isRpi = True
+    isRpi = True
 except ImportError:
-	print('Not RaspberryPi')
-	isRpi = False	
+    print('Not RaspberryPi')
+    isRpi = False	
     
 #Constants
 stepsPerRev = 200 #Motor 1.8deg/step
