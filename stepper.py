@@ -25,7 +25,10 @@ class Stepper(Motor):
             raise Exception('pins must be length of 4')
             
         #Raspberry Pi GPIO Setup
-        GPIO.setmode(GPIO.BCM)
+        if mode == 'BOARD':
+            GPIO.setmode(GPIO.BOARD)
+        else:
+            GPIO.setmode(GPIO.BCM)
 
         for p in self._pins:
             GPIO.setup(p, GPIO.OUT)
