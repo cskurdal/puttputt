@@ -8,10 +8,8 @@ class Stepper(Motor):
         
         if stepType == 'full':
             self._trajectory = [[1,0,1,0],[0,1,1,0],[0,1,0,1],[1,0,0,1]]
-        elif stepType == 'fullB': #alternate
-            self._trajectory = [[1,0,1,0],[1,0,0,1],[0,1,0,1],[0,1,1,0]]
         elif stepType == 'half':
-            self._trajectory = [[1,0,1,0],[1,0,0,0],[1,0,0,1],[0,0,0,1],[0,1,0,1],[0,1,0,0],[0,1,1,0],[0,0,1,0],[1,0,1,0]]
+            self._trajectory = [[1,0,1,0],[0,0,1,0],[0,1,1,0],[0,1,0,0],[0,1,0,1],[0,0,0,1],[1,0,0,1],[1,0,0,0]]
         elif stepType == 'single':
             self._trajectory = [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]]
         else:
@@ -38,10 +36,10 @@ class Stepper(Motor):
                 
             p = (self._position + len(self._trajectory)) % len(self._trajectory)
                         
-            print('position: ', self._position)
+            #print('position: ', self._position)
             for o in range(len(self._pins)):
                 GPIO.output(self._pins[o], self._trajectory[p][o])
-                print(' pin=', self._pins[o], ':', self._trajectory[p][o])
+                #print(' pin=', self._pins[o], ':', self._trajectory[p][o])
 
             time.sleep(delay)
             
