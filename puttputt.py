@@ -6,6 +6,10 @@ from stepper import Stepper
 
 try:
 	import RPi.GPIO as GPIO
+	
+    #Raspberry Pi GPIO Setup
+    GPIO.setmode(GPIO.BCM)
+	
 	isRpi = True
 except ImportError:
 	print('Not RaspberryPi')
