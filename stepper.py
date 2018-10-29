@@ -2,6 +2,10 @@ import time
 from motor import Motor
 import RPi.GPIO as GPIO
     
+'''
+    #Calling code will need to set GPIO mode
+    RPi.GPIO.setmode(GPIO.BCM)
+'''
 class Stepper(Motor):
     def __init__(self, pins, name = None, stepType = 'full'):
         super().__init__(pins, name)      
@@ -19,9 +23,6 @@ class Stepper(Motor):
         
         if len(self._pins) != 4:
             raise Exception('pins must be length of 4')
-        
-        #Raspberry Pi GPIO Setup
-        GPIO.setmode(GPIO.BCM)
 
         for p in self._pins:
             GPIO.setup(p, GPIO.OUT)
