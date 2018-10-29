@@ -72,22 +72,20 @@ def main():
     delay2 = args.delay2
     
     start = time.time()
-    try:
-        GPIO.setmode(GPIO.BCM)
+
+    m1 = Stepper([14,15,23,24], 'Stepper1', stepType = stepType)
+    m2 = Stepper([4,17,27,22], 'Stepper2', stepType = stepType)
+
+    #TODO: maybe use queue based events as described here: https://www.raspberrypi.org/forums/viewtopic.php?t=178212
+    thread1 = Thread(target=runMotorThread, args=(m1, start, maxtime, numStepsPerLoop))
+    #thread2 = Thread(target=runMotorThread, args=(m2, start, maxtime, numStepsPerLoop))
+
+    thread1.start()
+    #thread2.start()
 	
-        m1 = Stepper([14,15,23,24], 'Stepper1', stepType = stepType)
-        m2 = Stepper([4,17,27,22], 'Stepper2', stepType = stepType)
-
-        #TODO: maybe use queue based events as described here: https://www.raspberrypi.org/forums/viewtopic.php?t=178212
-        thread1 = Thread(target=runMotorThread, args=(m1, start, maxtime, numStepsPerLoop))
-        #thread2 = Thread(target=runMotorThread, args=(m2, start, maxtime, numStepsPerLoop))
-
-        thread1.start()
-        #thread2.start()
-    except KeyboardInterrupt: #From https://raspi.tv/2013/rpi-gpio-basics-3-how-to-exit-gpio-programs-cleanly-avoid-warnings-and-protect-your-pi
-        print('Keyboard interupt')
-    finally:
-        GPIO.cleanup() # this ensures a clean exit 
+    #Wait for threads to complete before exiting. Needed so that GPIO.cleanup can succeed
+    thread1.join()
+    #thread2.join()
         
        
 #---------------------------------------------------
@@ -95,3 +93,9 @@ try:
     main()
 except Except as e:
     print('Caught Exception: ', e)
+except KeyboardInterrupt: #From https://raspi.tv/2013/rpi-gpio-basics-3-how-to-exit-gpio-programs-cleanly-avoid-warnings-and-protect-your-pi
+    print('Keyboard interupt')
+finally:
+    GPIO.cleanup() # this ensures a clean exit 
+
+    
