@@ -13,7 +13,8 @@ except ImportError:
     isRpi = False	
     
 if isRpi:
-    GPIO.setmode(GPIO.BCM)
+    pass
+    #GPIO.setmode(GPIO.BCM)
     #GPIO.setwarnings(False)
 
 #Constants
@@ -78,7 +79,7 @@ def main():
     start = time.time()
     
     m1 = Stepper([14,15,23,24], 'Stepper1', stepType = stepType)
-    #m2 = Stepper([4,17,27,22], 'Stepper2', stepType = stepType)
+    m2 = Stepper([4,17,27,22], 'Stepper2', stepType = stepType)
 
     #TODO: maybe use queue based events as described here: https://www.raspberrypi.org/forums/viewtopic.php?t=178212
     thread1 = Thread(target=runMotorThread, args=(m1, start, maxtime, numStepsPerLoop))
@@ -89,7 +90,7 @@ def main():
     
 #---------------------------------------------------
 try:
-	main()
+    main()
 except KeyboardInterrupt: #From https://raspi.tv/2013/rpi-gpio-basics-3-how-to-exit-gpio-programs-cleanly-avoid-warnings-and-protect-your-pi
     print('Keyboard interupt')
 except Except as e:
