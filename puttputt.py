@@ -7,14 +7,15 @@ from stepper import Stepper
 try:
     import RPi.GPIO as GPIO
 	
-    #Raspberry Pi GPIO Setup
-    GPIO.setmode(GPIO.BCM)
-	
     isRpi = True
 except ImportError:
     print('Not RaspberryPi')
     isRpi = False	
     
+if isRpi:
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setwarnings(False)
+
 #Constants
 stepsPerRev = 200 #Motor 1.8deg/step
 
