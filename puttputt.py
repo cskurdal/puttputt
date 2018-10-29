@@ -70,6 +70,7 @@ def runMotorThread(motor, start, maxtime):
     
     motor.turnOff()
 
+    
 def main():
     global stepsPerRev, delay1, delay2, reverseMotor1, reverseMotor2
 
@@ -85,7 +86,7 @@ def main():
     
     args = parser.parse_args()
 		
-    print('args:',	args)
+    print('args:', args)
     
     mode = args.mode
     maxtime = args.maxtime
@@ -101,13 +102,12 @@ def main():
     m1 = Stepper([14,15,23,24], 'Stepper1')
     m2 = Stepper([4,17,27,22], 'Stepper2')
 
-    while (time.time() - start) <= maxtime:
-        #TODO: maybe use queue based events as described here: https://www.raspberrypi.org/forums/viewtopic.php?t=178212
-        thread1 = Thread(target=runMotorThread, args=(m1, start, maxtime))
-        #thread2 = Thread(target=runMotorThread, args=(m2, start, maxtime))
+    #TODO: maybe use queue based events as described here: https://www.raspberrypi.org/forums/viewtopic.php?t=178212
+    thread1 = Thread(target=runMotorThread, args=(m1, start, maxtime))
+    #thread2 = Thread(target=runMotorThread, args=(m2, start, maxtime))
         
-        thread1.start()
-        #thread2.start()
+    thread1.start()
+    #thread2.start()
     
 #---------------------------------------------------
 if isRpi:
