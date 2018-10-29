@@ -73,7 +73,7 @@ def main():
     
     start = time.time()
     try:
-	GPIO.setmode(GPIO.BCM)
+        GPIO.setmode(GPIO.BCM)
 	
         m1 = Stepper([14,15,23,24], 'Stepper1', stepType = stepType)
         m2 = Stepper([4,17,27,22], 'Stepper2', stepType = stepType)
