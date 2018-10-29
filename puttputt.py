@@ -10,33 +10,6 @@ try:
 except ImportError:
 	print('Not RaspberryPi')
 	isRpi = False	
-
-if isRpi:
-	#Raspberry Pi GPIO Setup
-	GPIO.setmode(GPIO.BCM)
-	GPIO.setwarnings(False)
-
-	# Enable pins 
-	motor1_A_1_pin = 14
-	motor1_A_2_pin = 15
-	motor1_B_1_pin = 23
-	motor1_B_2_pin = 24
-
-	motor2_A_1_pin = 4
-	motor2_A_2_pin = 17
-	motor2_B_1_pin = 27
-	motor2_B_2_pin = 22
-
-	GPIO.setup(motor1_A_1_pin, GPIO.OUT)
-	GPIO.setup(motor1_A_2_pin, GPIO.OUT)
-	GPIO.setup(motor1_B_1_pin, GPIO.OUT)
-	GPIO.setup(motor1_B_2_pin, GPIO.OUT)
-
-	GPIO.setup(motor2_A_1_pin, GPIO.OUT)
-	GPIO.setup(motor2_A_2_pin, GPIO.OUT)
-	GPIO.setup(motor2_B_1_pin, GPIO.OUT)
-	GPIO.setup(motor2_B_2_pin, GPIO.OUT)
-    
     
 #Constants
 stepsPerRev = 200 #Motor 1.8deg/step
@@ -46,13 +19,11 @@ delay2 = 0.0055
 reverseMotor1 = False #Switch if motor turns the wrong way
 reverseMotor2 = False #Switch if motor turns the wrong way
 
-currMotor1Step = 0b1000
-currMotor2Step = 0b1000
 
-def runMotorThread(motor, start, maxtime):
+def runMotorThread(motor, start, maxtime, numStepsPerLoop = 1):
     global stepsPerRev, delay1, delay2, reverseMotor1, reverseMotor2
 	
-    numStepsPerLoop = 1
+    numStepsPerLoop = numStepsPerLoop
     delay = delay1
     
     #Reverse
@@ -77,6 +48,8 @@ def main():
     parser = argparse.ArgumentParser(description='Pi Putt')
 
     parser.add_argument('mode', choices=['once', 'voice', 'loop'], default='once', help='run mode (default: once)')
+    parser.add_argument('numStepsPerLoop', type=int, default=1, help='number of steps per loop (default: 1)')    
+    parser.add_argument('stepType', choices=['full', 'half', 'single'], default='full', help='step type (default: full)')
     parser.add_argument('maxtime', type=float, default=5, help='seconds to run (default: 5)')
     parser.add_argument('delay1', type=float, default=0.0055, help='delay after each step of motor 1 (default: 0.0055s)')
     parser.add_argument('delay2', type=float, default=0.0055, help='delay after each step of motor 2 (default: 0.0055s)')
@@ -89,22 +62,22 @@ def main():
     print('args:', args)
     
     mode = args.mode
+    numStepsPerLoop = args.numStepsPerLoop
+    stepType = args.stepType
     maxtime = args.maxtime
     t1 = args.t1
     t2 = args.t2
     delay1 = args.delay1
     delay2 = args.delay2
     
-    print("Raspberry Pi" if isRpi else "NOT a Pi!")
-    
     start = time.time()
     
-    m1 = Stepper([14,15,23,24], 'Stepper1')
-    m2 = Stepper([4,17,27,22], 'Stepper2')
+    m1 = Stepper([14,15,23,24], 'Stepper1', stepType = stepType)
+    m2 = Stepper([4,17,27,22], 'Stepper2', stepType = stepType)
 
     #TODO: maybe use queue based events as described here: https://www.raspberrypi.org/forums/viewtopic.php?t=178212
-    thread1 = Thread(target=runMotorThread, args=(m1, start, maxtime))
-    #thread2 = Thread(target=runMotorThread, args=(m2, start, maxtime))
+    thread1 = Thread(target=runMotorThread, args=(m1, start, maxtime, numStepsPerLoop))
+    #thread2 = Thread(target=runMotorThread, args=(m2, start, maxtime, numStepsPerLoop))
         
     thread1.start()
     #thread2.start()
