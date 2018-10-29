@@ -23,8 +23,11 @@ class Stepper(Motor):
         
         if len(self._pins) != 4:
             raise Exception('pins must be length of 4')
-
+            
+        for p in self._pins:
+            GPIO.setup(p, GPIO.OUT)
         
+
     #Modeled after: http://homepage.divms.uiowa.edu/~jones/step/midlevel.html
     def step(self, steps, delay = 0.0055, turnOff = True):
         for s in range(steps):
