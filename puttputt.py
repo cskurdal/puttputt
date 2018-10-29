@@ -14,7 +14,7 @@ except ImportError:
     
 if isRpi:
     GPIO.setmode(GPIO.BCM)
-    GPIO.setwarnings(False)
+    #GPIO.setwarnings(False)
 
 #Constants
 stepsPerRev = 200 #Motor 1.8deg/step
@@ -78,7 +78,7 @@ def main():
     start = time.time()
     
     m1 = Stepper([14,15,23,24], 'Stepper1', stepType = stepType)
-    m2 = Stepper([4,17,27,22], 'Stepper2', stepType = stepType)
+    #m2 = Stepper([4,17,27,22], 'Stepper2', stepType = stepType)
 
     #TODO: maybe use queue based events as described here: https://www.raspberrypi.org/forums/viewtopic.php?t=178212
     thread1 = Thread(target=runMotorThread, args=(m1, start, maxtime, numStepsPerLoop))
