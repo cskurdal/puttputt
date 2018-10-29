@@ -91,10 +91,10 @@ def main():
 #---------------------------------------------------
 try:
     main()
-except Except as e:
-    print('Caught Exception: ', e)
 except KeyboardInterrupt: #From https://raspi.tv/2013/rpi-gpio-basics-3-how-to-exit-gpio-programs-cleanly-avoid-warnings-and-protect-your-pi
     print('Keyboard interupt')
+except Exception as e:
+    print('Caught Exception: ', e)
 finally:
     GPIO.cleanup() # this ensures a clean exit 
 
