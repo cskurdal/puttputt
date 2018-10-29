@@ -7,7 +7,7 @@ import RPi.GPIO as GPIO
     RPi.GPIO.setmode(GPIO.BCM)
 '''
 class Stepper(Motor):
-    def __init__(self, pins, name = None, stepType = 'full'):
+    def __init__(self, pins, name = None, stepType = 'full', mode = 'BCM'):
         super().__init__(pins, name)      
         
         if stepType == 'full':
@@ -23,6 +23,12 @@ class Stepper(Motor):
         
         if len(self._pins) != 4:
             raise Exception('pins must be length of 4')
+        
+        #Set mode
+        if mode == 'BOARD':            
+            GPIO.setmode(GPIO.BOARD)
+        else:
+            GPIO.setmode(GPIO.BCM)
 
         for p in self._pins:
             GPIO.setup(p, GPIO.OUT)
