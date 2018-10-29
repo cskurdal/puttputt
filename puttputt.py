@@ -85,6 +85,7 @@ def main():
 #---------------------------------------------------
 try:
 	main()
-except Exception as e:
-	print(e)
-    
+except KeyboardInterrupt: #From https://raspi.tv/2013/rpi-gpio-basics-3-how-to-exit-gpio-programs-cleanly-avoid-warnings-and-protect-your-pi
+    print('Keyboard interupt')
+finally:
+    GPIO.cleanup() # this ensures a clean exit 
