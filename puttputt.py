@@ -4,6 +4,25 @@ import sys, math, time, argparse, random
 from threading import Thread
 from stepper import Stepper
 
+'''
+Revision: 000f (Raspberry Pi 1 B)
+Pinout
+
+   3V3  (1) (2)  5V    
+ GPIO2  (3) (4)  5V    
+ GPIO3  (5) (6)  GND   
+ GPIO4  (7) (8)  GPIO14
+   GND  (9) (10) GPIO15
+GPIO17 (11) (12) GPIO18
+GPIO27 (13) (14) GND   
+GPIO22 (15) (16) GPIO23
+   3V3 (17) (18) GPIO24
+GPIO10 (19) (20) GND   
+ GPIO9 (21) (22) GPIO25
+GPIO11 (23) (24) GPIO8 
+   GND (25) (26) GPIO7 
+'''
+
 try:
     import RPi.GPIO as GPIO
 	
@@ -13,16 +32,33 @@ except ImportError:
     isRpi = False
 
 #Constants
-stepsPerRev = 200 #Motor 1.8deg/step
-
-delay1 = 0.0055
-delay2 = 0.0055
+delay1 = 0.005 #60RPM
+delay2 = 0.005 #60RPM
 reverseMotor1 = False #Switch if motor turns the wrong way
 reverseMotor2 = False #Switch if motor turns the wrong way
 
 
+class VelocityRPM(object):
+    def __init__(self, targetRPM, seconds, stepsPerRev = 200): #Motor 1.8deg/step
+        self._currentRPM = 0
+        self._targetRPM = targetRPM
+        self._seconds = seconds
+        self._startTime = time.time()
+        self._stepsPerRev = stepsPerRev
+        
+    def getDelay(self):
+        t = time.time()
+        
+        if t > (self._startTime + self._seconds):
+            return 60 / (self._currentRPM * self._stepsPerRev)
+        else: #linear acceleration
+            return (((self._startTime + t) / (self._startTime + self._seconds)) * 60) / (self._currentRPM * self._stepsPerRev)
+        
+    def setCurrentRPM(self, delayBetweenSteps):
+        self._currentRPM = 
+        
 def runMotorThread(motor, start, maxtime, numStepsPerLoop = 1):
-    global stepsPerRev, delay1, delay2, reverseMotor1, reverseMotor2
+    global delay1, delay2, reverseMotor1, reverseMotor2
 	
     numStepsPerLoop = numStepsPerLoop
     delay = delay1
@@ -37,14 +73,13 @@ def runMotorThread(motor, start, maxtime, numStepsPerLoop = 1):
     
     while (time.time() - start) <= maxtime:
         #TODO: maybe use queue based events as described here: https://www.raspberrypi.org/forums/viewtopic.php?t=178212
-        #moveSteps(motor, 1*stepsPerRev)
         motor.step(numStepsPerLoop, delay = delay, turnOff = False)
     
     motor.turnOff()
 
     
 def main():
-    global stepsPerRev, delay1, delay2, reverseMotor1, reverseMotor2
+    global delay1, delay2, reverseMotor1, reverseMotor2
 
     parser = argparse.ArgumentParser(description='Pi Putt')
 
@@ -78,14 +113,14 @@ def main():
 
     #TODO: maybe use queue based events as described here: https://www.raspberrypi.org/forums/viewtopic.php?t=178212
     thread1 = Thread(target=runMotorThread, args=(m1, start, maxtime, numStepsPerLoop))
-    #thread2 = Thread(target=runMotorThread, args=(m2, start, maxtime, numStepsPerLoop))
+    thread2 = Thread(target=runMotorThread, args=(m2, start, maxtime, numStepsPerLoop))
 
     thread1.start()
-    #thread2.start()
+    thread2.start()
 	
     #Wait for threads to complete before exiting. Needed so that GPIO.cleanup can succeed
     thread1.join()
-    #thread2.join()
+    thread2.join()
         
        
 #---------------------------------------------------
