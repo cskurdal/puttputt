@@ -90,12 +90,17 @@ def runMotorThread(motor, start, maxtime, numStepsPerLoop = 1):
     delay = delay1
     
     #Reverse
-    if (motor.name == 'Stepper1' and reverseMotor1) or (motor.name == 'Stepper2' and reverseMotor2):
-        numStepsPerLoop *= -1
+    if motor.name == 'Stepper1':
+        if reverseMotor1:
+            numStepsPerLoop *= -1
     
     #if stepper 2 then set delay2
     if motor.name == 'Stepper2':
+        if reverseMotor2:
+            numStepsPerLoop *= -1
+            
         delay = delay2
+        
     
     while (time.time() - start) <= maxtime:
         #TODO: maybe use queue based events as described here: https://www.raspberrypi.org/forums/viewtopic.php?t=178212
