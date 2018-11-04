@@ -20,6 +20,7 @@ class Stepper(Motor):
             raise Exception('invalid stepType')
         
         self._position = 0
+        self._delay = 0.005
         
         if len(self._pins) != 4:
             raise Exception('pins must be length of 4')
@@ -35,7 +36,7 @@ class Stepper(Motor):
         
 
     #Modeled after: http://homepage.divms.uiowa.edu/~jones/step/midlevel.html
-    def step(self, steps, delay = 0.0055, turnOff = True):
+    def step(self, steps, delay = self._delay, turnOff = True):
         for s in range(steps):
             if steps > 0:
                 self._position += 1 #positive, go forward
@@ -49,12 +50,25 @@ class Stepper(Motor):
                 GPIO.output(self._pins[o], self._trajectory[p][o])
                 #print(' pin=', self._pins[o], ':', self._trajectory[p][o])
 
-            time.sleep(delay)
+            time.sleep(self._delay)
             
         if turnOff:
             for o in self._pins:
                 GPIO.output(o, 0)
         
+        
+    @property
+    def delay(self):
+        return self._delay
+
+    
+    @delay.setter
+    def delay(self, delay):
+        if delay < 0.001:
+            raise Exception("too small")
+        else:
+            self._delay = delay
+       
 
     def turnOff(self):
         for o in self._pins:
