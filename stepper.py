@@ -15,7 +15,8 @@ class Stepper(Motor):
         elif stepType == 'half':
             self._trajectory = [[1,0,1,0],[0,0,1,0],[0,1,1,0],[0,1,0,0],[0,1,0,1],[0,0,0,1],[1,0,0,1],[1,0,0,0]]
         elif stepType == 'single':
-            self._trajectory = [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]]
+            #self._trajectory = [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]] #TODO: doesn't work
+            self._trajectory = [[1,0,0,0],[0,0,1,0],[0,1,0,0],[0,0,0,1]]
         else:
             raise Exception('invalid stepType')
         
@@ -56,6 +57,29 @@ class Stepper(Motor):
             for o in self._pins:
                 GPIO.output(o, 0)
         
+        
+    #Turns off motors power then sleeps, will reduce heat, but also allow motor to turn will sleeping
+    def stepWithTurnOffAndSleep(self, steps, delay = self._delay, turnOff = True):
+        for s in range(steps):
+            if steps > 0:
+                self._position += 1 #positive, go forward
+            else:
+                self._position -= 1 #if negative, go backwards
+                
+            p = (self._position + len(self._trajectory)) % len(self._trajectory)
+                        
+            #print('position: ', self._position)
+            for o in range(len(self._pins)):
+                GPIO.output(self._pins[o], self._trajectory[p][o])
+                #print(' pin=', self._pins[o], ':', self._trajectory[p][o])
+
+            #Turn off, THEN sleep
+            if turnOff:
+                for o in self._pins:
+                    GPIO.output(o, 0)
+                    
+            time.sleep(self._delay)
+            
         
     @property
     def delay(self):
