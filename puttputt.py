@@ -135,9 +135,8 @@ def main():
     parser.add_argument('--setup', '-s', dest='setup', action='store_true', default=False, help='setup (default: False)')
     
     args = parser.parse_args()
-		
-    
-            ('args:', args)
+
+    print('args:', args)
     
     mode = args.mode
     numStepsPerLoop = args.numStepsPerLoop
