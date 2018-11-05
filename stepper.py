@@ -7,7 +7,7 @@ import RPi.GPIO as GPIO
     RPi.GPIO.setmode(GPIO.BCM)
 '''
 class Stepper(Motor):
-    def __init__(self, pins, name = None, stepType = 'full', mode = 'BCM'):
+    def __init__(self, pins, name = None, stepType = 'full', stepsPerRev = 200, mode = 'BCM'):
         super().__init__(pins, name)      
         
         if stepType == 'full':
@@ -22,6 +22,8 @@ class Stepper(Motor):
         
         self._position = 0
         self._delay = 0.005
+        self._stepsPerRev = stepsPerRev
+        self._currentRPM = 0
         
         if len(self._pins) != 4:
             raise Exception('pins must be length of 4')
@@ -35,9 +37,23 @@ class Stepper(Motor):
         for p in self._pins:
             GPIO.setup(p, GPIO.OUT)
         
+        
+    def getDelay(self):
+        t = time.time()
+        
+        if t > (self._startTime + self._seconds):
+            return 60 / (self._currentRPM * self._stepsPerRev)
+        else: #linear acceleration
+            return (((self._startTime + t) / (self._startTime + self._seconds)) * 60) / (self._currentRPM * self._stepsPerRev)
+        
+      
+    #Set self._delay based on RPM and steps/Rev
+    def setCurrentRPM(self, rpm):
+        self._delay = 60 / (rpm * self._stepsPerRev)
 
+        
     #Modeled after: http://homepage.divms.uiowa.edu/~jones/step/midlevel.html
-    def step(self, steps, delay = self._delay, turnOff = True):
+    def step(self, steps, turnOff = True):
         for s in range(steps):
             if steps > 0:
                 self._position += 1 #positive, go forward
@@ -59,7 +75,7 @@ class Stepper(Motor):
         
         
     #Turns off motors power then sleeps, will reduce heat, but also allow motor to turn will sleeping
-    def stepWithTurnOffAndSleep(self, steps, delay = self._delay, turnOff = True):
+    def stepWithTurnOffAndSleep(self, steps, turnOff = True):
         for s in range(steps):
             if steps > 0:
                 self._position += 1 #positive, go forward
