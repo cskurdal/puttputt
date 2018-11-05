@@ -105,9 +105,15 @@ def runMotorThread(motor, start, maxtime, numStepsPerLoop = 1):
     t = time.time()
     while (t - start) <= maxtime:
         #TODO: maybe use queue based events as described here: https://www.raspberrypi.org/forums/viewtopic.php?t=178212
-        #motor.step(numStepsPerLoop, turnOff = False)
-        motor.setCurrentRPM(30 + 30 * math.sin(time.time() / (2*math.pi))) #Osilates from 0-60 RPM every minute
-        motor.stepWithTurnOffAndSleep(numStepsPerLoop, turnOff = True)
+        motor.setCurrentRPM(30 + 30 * math.sin(t / (2*math.pi))) #Osilates from 0-60 RPM every minute
+        
+        print(motor.name + ' delay: ' + motor.delay)
+        
+        if True:
+            motor.stepWithTurnOffAndSleep(numStepsPerLoop, turnOff = False)
+        else:
+            motor.step(numStepsPerLoop, turnOff = False)
+            
         t = time.time()
         
     motor.turnOff()
@@ -130,7 +136,8 @@ def main():
     
     args = parser.parse_args()
 		
-    print('args:', args)
+    
+            ('args:', args)
     
     mode = args.mode
     numStepsPerLoop = args.numStepsPerLoop
