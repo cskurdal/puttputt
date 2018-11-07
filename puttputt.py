@@ -110,7 +110,7 @@ def runMotorThread(motor, start, maxtime, numStepsPerLoop = 1):
         print(motor.name + ' delay: ' + str(motor.delay))
         
         if True:
-            motor.stepWithTurnOffAndSleep(numStepsPerLoop, turnOff = False)
+            motor.stepWithTurnOffAndSleep(numStepsPerLoop, turnOff = True)
         else:
             motor.step(numStepsPerLoop, turnOff = False)
             
