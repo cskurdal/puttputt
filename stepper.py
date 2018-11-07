@@ -104,8 +104,8 @@ class Stepper(Motor):
     
     @delay.setter
     def delay(self, delay):
-        if delay < 0.001:
-            raise Exception("too small")
+        if delay < 0:
+            0
         else:
             self._delay = delay
        
