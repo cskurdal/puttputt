@@ -56,20 +56,20 @@ except ImportError:
     print('Not RaspberryPi')
     isRpi = False
 
+    
 #Constants
 delay1 = 0.005 #60RPM
 delay2 = 0.005 #60RPM
 reverseMotor1 = False #Switch if motor turns the wrong way
 reverseMotor2 = False #Switch if motor turns the wrong way
-
+slowDown1 = False
+slowDown2 = False
 
 class VelocityRPM(object):
     def __init__(self, targetRPM, seconds, stepsPerRev = 200): #Motor 1.8deg/step
-        self._currentRPM = 0
-        self._targetRPM = targetRPM
-        self._seconds = seconds
         self._startTime = time.time()
         self._stepsPerRev = stepsPerRev
+        self._currentOscillatingRPM = lambda self, t: 30 + 30 * math.sin((time.time() - self._startTime) / (2 * math.pi)) #Osilates from 0-60 RPM every minute
         
     def getDelay(self):
         t = time.time()
@@ -78,35 +78,77 @@ class VelocityRPM(object):
             return 60 / (self._currentRPM * self._stepsPerRev)
         else: #linear acceleration
             return (((self._startTime + t) / (self._startTime + self._seconds)) * 60) / (self._currentRPM * self._stepsPerRev)
-        
-    def setCurrentRPM(self, rpm):
-        self._currentRPM = rpm
 	
         
-def runMotorThread(motor, start, maxtime, numStepsPerLoop = 1):
-    global delay1, delay2, reverseMotor1, reverseMotor2
+def runMotor1(motor, start, maxtime, numStepsPerLoop = 1):
+    global delay1, reverseMotor1, slowDown1
 	
     numStepsPerLoop = numStepsPerLoop
     
     #Reverse
-    if motor.name == 'Stepper1':
-        motor.delay = delay1
+    motor.delay = delay1
+    slowDownInitComplete = False
+    slowDownCountdown = 0
         
-        if reverseMotor1:
-            numStepsPerLoop *= -1
+    if reverseMotor1:
+        numStepsPerLoop *= -1
+        
+    normalRPMFunction = lambda t, start: 30 + 30 * math.sin((t - start) / (2 * math.pi))
+    slowDownRPMFunction = t, start: 0 #this will be calculated based on the current RPM
+        
+    t = time.time()
+    while (t - start) <= maxtime:
+        if slowDown:
+            if slowDownInitComplete:
+                rpm = slowDownRPMFunction(t, start)
+                motor.setCurrentRPM(rpm)
+            else:
+                currentRPM = normalRPMFunction(t, start)
+                slowDownTime = 2 #seconds
+                
+                #Create lambda function
+                slowDownRPMFunction = t, start: (-currentRPM / slowDownTime) + currentRPM
+                slowDownInitComplete = True
+                continue
+        else:
+            rpm = normalRPMFunction(t, start)
+            motor.setCurrentRPM(rpm) #Osilates from 0-60 RPM every minute
+            
+        print(motor.name + ' delay: ' + str(motor.delay))
+        
+        #rpm / math.abs(rpm) will reverse motor direction if RPM is a - value
+        if False:
+            motor.stepWithTurnOffAndSleep(numStepsPerLoop * rpm / math.abs(rpm), turnOff = False)
+        else:
+            motor.step(numStepsPerLoop * rpm / math.abs(rpm), turnOff = True)
+            
+        t = time.time()
+        
+    motor.turnOff()
+
+        
+def runMotor2(motor, start, maxtime, numStepsPerLoop = 1):
+    global delay2, reverseMotor2, slowDown2
+	
+    numStepsPerLoop = numStepsPerLoop
     
-    #if stepper 2 then set delay2
-    if motor.name == 'Stepper2':
-        motor.delay = delay2
+    motor.delay = delay2
         
-        if reverseMotor2:
-            numStepsPerLoop *= -1
+    if reverseMotor2:
+        numStepsPerLoop *= -1
         
     t = time.time()
     while (t - start) <= maxtime:
         #TODO: maybe use queue based events as described here: https://www.raspberrypi.org/forums/viewtopic.php?t=178212
-        motor.setCurrentRPM(30 + 30 * math.sin(t / (2*math.pi))) #Osilates from 0-60 RPM every minute
-        
+        if slowDown2:            
+            motor.setCurrentRPM(0)
+            print('not running ')
+            motor.turnOff()
+            
+            notRunTime = 10
+        else:
+            motor.setCurrentRPM(30 + 30 * math.sin((t - start) / (2*math.pi))) #Osilates from 0-60 RPM every minute
+            
         print(motor.name + ' delay: ' + str(motor.delay))
         
         if False:
@@ -153,8 +195,8 @@ def main():
     m2 = Stepper([4,17,27,22], 'Stepper2', stepType = stepType)
 
     #TODO: maybe use queue based events as described here: https://www.raspberrypi.org/forums/viewtopic.php?t=178212
-    thread1 = Thread(target=runMotorThread, args=(m1, start, maxtime, numStepsPerLoop))
-    thread2 = Thread(target=runMotorThread, args=(m2, start, maxtime, numStepsPerLoop))
+    thread1 = Thread(target=runMotor1, args=(m1, start, maxtime, numStepsPerLoop))
+    thread2 = Thread(target=runMotor2, args=(m2, start, maxtime, numStepsPerLoop))
 
     thread1.start()
     thread2.start()
