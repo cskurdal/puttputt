@@ -3,6 +3,19 @@
 import sys, math, time, argparse, random 
 from threading import Thread
 from stepper import Stepper
+import snowboydecoder
+import signal
+
+interrupted = False
+
+def signal_handler(signal, frame):
+    global interrupted
+    interrupted = True
+
+def interrupt_callback():
+    global interrupted
+    return interrupted
+
 
 '''
 Revision           : a02082 (Raspberry Pi 3)
@@ -65,6 +78,7 @@ reverseMotor2 = False #Switch if motor turns the wrong way
 slowDown1 = False
 slowDown2 = False
 
+
 class VelocityRPM(object):
     def __init__(self, targetRPM, seconds, stepsPerRev = 200): #Motor 1.8deg/step
         self._startTime = time.time()
@@ -98,7 +112,7 @@ def runMotor1(motor, start, maxtime, numStepsPerLoop = 1):
         
     t = time.time()
     while (t - start) <= maxtime:
-        if slowDown:
+        if interrupted:
             if slowDownInitComplete:
                 rpm = slowDownRPMFunction(t, start)
                 motor.setCurrentRPM(rpm)
@@ -140,7 +154,7 @@ def runMotor2(motor, start, maxtime, numStepsPerLoop = 1):
     t = time.time()
     while (t - start) <= maxtime:
         #TODO: maybe use queue based events as described here: https://www.raspberrypi.org/forums/viewtopic.php?t=178212
-        if slowDown2:            
+        if interrupted:            
             motor.setCurrentRPM(0)
             print('not running ')
             motor.turnOff()
@@ -201,10 +215,32 @@ def main():
     thread1.start()
     thread2.start()
 	
+    if mode == 'voice':
+        models = []
+
+        # capture SIGINT signal, e.g., Ctrl+C
+        signal.signal(signal.SIGINT, signal_handler)
+
+        sensitivity = [0.5]*len(models)
+        detector = snowboydecoder.HotwordDetector(models, sensitivity=sensitivity)
+        callbacks = [lambda: snowboydecoder.play_audio_file(snowboydecoder.DETECT_DING),
+                     lambda: snowboydecoder.play_audio_file(snowboydecoder.DETECT_DONG)]
+        
+        print('Listening... Press Ctrl+C to exit')
+
+        # main loop
+        # make sure you have the same numbers of callbacks and models
+        detector.start(detected_callback=callbacks,
+                       interrupt_check=interrupt_callback,
+                       sleep_time=0.03)
+
+        detector.terminate()
+    
     #Wait for threads to complete before exiting. Needed so that GPIO.cleanup can succeed
     thread1.join()
     thread2.join()
         
+       
        
 #---------------------------------------------------
 try:
