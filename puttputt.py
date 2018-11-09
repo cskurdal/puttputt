@@ -94,7 +94,7 @@ def runMotor1(motor, start, maxtime, numStepsPerLoop = 1):
         numStepsPerLoop *= -1
         
     normalRPMFunction = lambda t, start: 30 + 30 * math.sin((t - start) / (2 * math.pi))
-    slowDownRPMFunction = t, start: 0 #this will be calculated based on the current RPM
+    slowDownRPMFunction = lambda t, start: 0 #this will be calculated based on the current RPM
         
     t = time.time()
     while (t - start) <= maxtime:
@@ -107,7 +107,7 @@ def runMotor1(motor, start, maxtime, numStepsPerLoop = 1):
                 slowDownTime = 2 #seconds
                 
                 #Create lambda function
-                slowDownRPMFunction = t, start: (-currentRPM / slowDownTime) + currentRPM
+                slowDownRPMFunction = lambda t, start: (-currentRPM / slowDownTime) + currentRPM
                 slowDownInitComplete = True
                 continue
         else:
