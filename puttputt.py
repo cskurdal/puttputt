@@ -13,8 +13,10 @@ def signal_handler(signal, frame):
     interrupted = True
 
 def interrupt_callback():
-    global interrupted
-    return interrupted
+    global interrupted, thread1Done, thread2Done
+    
+    #If Ctrl-C or motors are done spinning
+    return interrupted or (thread1Done and thread2Done)
 
 
 '''
@@ -78,6 +80,10 @@ reverseMotor2 = False #Switch if motor turns the wrong way
 slowDown1 = False
 slowDown2 = False
 
+#Set to True on completion of runMotor method to interupt voice hot word detection
+thread1Done = False
+thread2Done = False
+
 
 class VelocityRPM(object):
     def __init__(self, targetRPM, seconds, stepsPerRev = 200): #Motor 1.8deg/step
@@ -95,7 +101,7 @@ class VelocityRPM(object):
 	
         
 def runMotor1(motor, start, maxtime, numStepsPerLoop = 1):
-    global delay1, reverseMotor1, slowDown1
+    global delay1, reverseMotor1, slowDown1, thread1Done
 	
     numStepsPerLoop = numStepsPerLoop
     
@@ -132,17 +138,18 @@ def runMotor1(motor, start, maxtime, numStepsPerLoop = 1):
         
         #rpm / math.abs(rpm) will reverse motor direction if RPM is a - value
         if False:
-            motor.stepWithTurnOffAndSleep(numStepsPerLoop * rpm / math.abs(rpm), turnOff = False)
+            motor.stepWithTurnOffAndSleep(numStepsPerLoop * int(rpm / abs(rpm)), turnOff = False)
         else:
-            motor.step(numStepsPerLoop * rpm / math.abs(rpm), turnOff = True)
+            motor.step(numStepsPerLoop * int(rpm / abs(rpm)), turnOff = True)
             
         t = time.time()
         
     motor.turnOff()
+    thread1Done = True
 
         
 def runMotor2(motor, start, maxtime, numStepsPerLoop = 1):
-    global delay2, reverseMotor2, slowDown2
+    global delay2, reverseMotor2, slowDown2, thread2Done
 	
     numStepsPerLoop = numStepsPerLoop
     
@@ -173,6 +180,7 @@ def runMotor2(motor, start, maxtime, numStepsPerLoop = 1):
         t = time.time()
         
     motor.turnOff()
+    thread2Done = True
 
     
 def main():
