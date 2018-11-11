@@ -5,8 +5,14 @@ from threading import Thread
 from stepper import Stepper
 import snowboydecoder
 import signal
+from os import listdir
+from os.path import isfile, join
 
+modelsPath = './resources/models' 
 interrupted = False
+
+def regcognition_callback():
+    print('recongnition_callback')
 
 def signal_handler(signal, frame):
     global interrupted
@@ -224,15 +230,23 @@ def main():
     thread2.start()
 	
     if mode == 'voice':
-        models = []
+        models = [f for f in listdir(modelsPath) if isfile(join(modelsPath, f))]
+        #models = []
+        
+        print('Voice models: ', models)
+        
+        #Don't need a callback the interrupt_check set the flag that will trigger handle the words
+        callbacks = []
+        for m in models:
+            callbacks.append(lambda: regcognition_callback)
 
         # capture SIGINT signal, e.g., Ctrl+C
         signal.signal(signal.SIGINT, signal_handler)
 
         sensitivity = [0.5]*len(models)
         detector = snowboydecoder.HotwordDetector(models, sensitivity=sensitivity)
-        callbacks = [lambda: snowboydecoder.play_audio_file(snowboydecoder.DETECT_DING),
-                     lambda: snowboydecoder.play_audio_file(snowboydecoder.DETECT_DONG)]
+        #callbacks = [lambda: snowboydecoder.play_audio_file(snowboydecoder.DETECT_DING),
+        #             lambda: snowboydecoder.play_audio_file(snowboydecoder.DETECT_DONG)]
         
         print('Listening... Press Ctrl+C to exit')
 
@@ -243,6 +257,7 @@ def main():
                        sleep_time=0.03)
 
         detector.terminate()
+        print('detector.terminate()')
     
     #Wait for threads to complete before exiting. Needed so that GPIO.cleanup can succeed
     thread1.join()
