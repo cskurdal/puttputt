@@ -23,7 +23,7 @@ def slowdown_RPM_function(t, start, currentRPM, slowDownTime, interruptedTime):
         return (-currentRPM / slowDownTime) + currentRPM
     else:
         #When start + slow down and interrupted time is elasped then restart
-        if t > (start + slowDownTime + interruptedTime)
+        if t > (start + slowDownTime + interruptedTime):
             interrupted = False
             
         return 0
@@ -140,16 +140,12 @@ def runMotor1(motor, start, maxtime, numStepsPerLoop = 1):
     interruptedTime = 5 #time interrupted
     slowDownTime = 2 #seconds to stop
     
-    normalRPMFunction = lambda t, start: normal_RPM_function(t, start)
-    #this will be calculated based on the current RPM
-    slowDownRPMFunction = lambda t, start, currentRPM: slowdown_RPM_function(t, start, currentRPM, slowDownTime, interruptedTime)
-    
     rpm = 0
     t = time.time()
     while (t - start) <= maxtime:
         if interrupted:
             print('1 INTERRUPTED!!')
-            rpm = slowDownRPMFunction(t, start, rpm)
+            rpm = slowdown_RPM_function(t, start, rpm, slowDownTime, interruptedTime)
                 
             #If rpm is 0 then just sleep
             if rpm == 0:                    
@@ -166,7 +162,7 @@ def runMotor1(motor, start, maxtime, numStepsPerLoop = 1):
              #   slowDownInitComplete = True
              #   continue
         else:
-            rpm = normalRPMFunction(t, start)
+            rpm = normal_RPM_function(t, start)
             
             #If rpm is 0 then just sleep
             if rpm == 0:                    
