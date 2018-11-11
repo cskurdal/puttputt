@@ -246,6 +246,9 @@ def main():
 
         print('callbacks: ', callbacks)
             
+        callbacks = [lambda: snowboydecoder.play_audio_file(snowboydecoder.DETECT_DING),
+                     lambda: snowboydecoder.play_audio_file(snowboydecoder.DETECT_DONG)]
+
         # capture SIGINT signal, e.g., Ctrl+C
         signal.signal(signal.SIGINT, signal_handler)
 
