@@ -11,7 +11,7 @@ from os.path import isfile, join
 modelsPath = './resources/models/'
 interrupted = False
 
-def snowboy_callback()
+def snowboy_callback():
     print('SNOWBOY!!')
 
 def recognition_callback():
