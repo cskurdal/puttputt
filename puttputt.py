@@ -237,20 +237,20 @@ def main():
         models = [modelsPath + f for f in listdir(modelsPath) if isfile(join(modelsPath, f))]
         #models = []
         
-        print('Voice models: ', models)
+        print('Voice models: ' + models)
         
         #Don't need a callback the interrupt_check set the flag that will trigger handle the words
         callbacks = []
         for m in models:
-            callbacks.append(recognition_callback())
+            callbacks.append(lambda: recognition_callback)
 
+        print('callbacks: ' + callbacks)
+            
         # capture SIGINT signal, e.g., Ctrl+C
         signal.signal(signal.SIGINT, signal_handler)
 
         sensitivity = [0.5]*len(models)
         detector = snowboydecoder.HotwordDetector(models, sensitivity=sensitivity)
-        #callbacks = [lambda: snowboydecoder.play_audio_file(snowboydecoder.DETECT_DING),
-        #             lambda: snowboydecoder.play_audio_file(snowboydecoder.DETECT_DONG)]
         
         print('Listening... Press Ctrl+C to exit')
 
