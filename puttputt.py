@@ -8,7 +8,7 @@ import signal
 from os import listdir
 from os.path import isfile, join
 
-modelsPath = './resources/models' 
+modelsPath = './resources/models/'
 interrupted = False
 
 def regcognition_callback():
@@ -230,7 +230,7 @@ def main():
     thread2.start()
 	
     if mode == 'voice':
-        models = [f for f in listdir(modelsPath) if isfile(join(modelsPath, f))]
+        models = [modelsPath + f for f in listdir(modelsPath) if isfile(join(modelsPath, f))]
         #models = []
         
         print('Voice models: ', models)
