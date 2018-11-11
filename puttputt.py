@@ -245,11 +245,11 @@ def main():
         #Don't need a callback the interrupt_check set the flag that will trigger handle the words
         callbacks = []
         for m in models:
-            callbacks.append(lambda: recognition_callback)
+            callbacks.append(lambda: recognition_callback())
             
         #callbacks = [lambda: snowboydecoder.play_audio_file(snowboydecoder.DETECT_DING), lambda: snowboydecoder.play_audio_file(snowboydecoder.DETECT_DONG)]
         
-        callbacks = [lambda: snowboy_callback, lambda: recognition_callback]
+        callbacks = [lambda: snowboy_callback(), lambda: recognition_callback]
         
         # capture SIGINT signal, e.g., Ctrl+C
         signal.signal(signal.SIGINT, signal_handler)
