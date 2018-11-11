@@ -12,8 +12,8 @@ modelsPath = './resources/models/'
 interrupted = False
 
 def slowdown_RPM_function(t, start, currentRPM, slowDownTime, interruptedTime):
-    if (t <= (start + interruptedTime)):
-        return -currentRPM / slowDownTime) + currentRPM
+    if t <= (start + interruptedTime):
+        return (-currentRPM / slowDownTime) + currentRPM
     else:        
         interrupted = False
         return 0
