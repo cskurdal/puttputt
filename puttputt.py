@@ -11,8 +11,6 @@ from os.path import isfile, join
 modelsPath = './resources/models/'
 interrupted = False
 
-def snowboy_callback():
-    print('SNOWBOY!!')
 
 def recognition_callback():
     global interrupted
@@ -110,7 +108,7 @@ class VelocityRPM(object):
         else: #linear acceleration
             return (((self._startTime + t) / (self._startTime + self._seconds)) * 60) / (self._currentRPM * self._stepsPerRev)
 
-        
+
 def runMotor1(motor, start, maxtime, numStepsPerLoop = 1):
     global delay1, reverseMotor1, slowDown1, thread1Done, interrupted
 
@@ -242,14 +240,9 @@ def main():
         
         print('Voice models: ', models)
         
-        #Don't need a callback the interrupt_check set the flag that will trigger handle the words
         callbacks = []
         for m in models:
             callbacks.append(lambda: recognition_callback())
-            
-        #callbacks = [lambda: snowboydecoder.play_audio_file(snowboydecoder.DETECT_DING), lambda: snowboydecoder.play_audio_file(snowboydecoder.DETECT_DONG)]
-        
-        callbacks = [lambda: snowboy_callback(), lambda: recognition_callback]
         
         # capture SIGINT signal, e.g., Ctrl+C
         signal.signal(signal.SIGINT, signal_handler)
