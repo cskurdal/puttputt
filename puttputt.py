@@ -12,6 +12,8 @@ modelsPath = './resources/models/'
 interrupted = False
 
 def regcognition_callback():
+    global interrupted
+    interrupted = True
     print('recongnition_callback')
 
 def signal_handler(signal, frame):
@@ -107,7 +109,7 @@ class VelocityRPM(object):
 	
         
 def runMotor1(motor, start, maxtime, numStepsPerLoop = 1):
-    global delay1, reverseMotor1, slowDown1, thread1Done
+    global delay1, reverseMotor1, slowDown1, thread1Done, interrupted
 	
     numStepsPerLoop = numStepsPerLoop
     
@@ -156,7 +158,7 @@ def runMotor1(motor, start, maxtime, numStepsPerLoop = 1):
 
         
 def runMotor2(motor, start, maxtime, numStepsPerLoop = 1):
-    global delay2, reverseMotor2, slowDown2, thread2Done
+    global delay2, reverseMotor2, slowDown2, thread2Done, interrupted
 	
     numStepsPerLoop = numStepsPerLoop
     
