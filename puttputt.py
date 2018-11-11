@@ -125,6 +125,7 @@ def runMotor1(motor, start, maxtime, numStepsPerLoop = 1):
     t = time.time()
     while (t - start) <= maxtime:
         if interrupted:
+            print('INTERRUPTED!!')
             if slowDownInitComplete:
                 rpm = slowDownRPMFunction(t, start)
                 motor.setCurrentRPM(rpm)
@@ -167,7 +168,8 @@ def runMotor2(motor, start, maxtime, numStepsPerLoop = 1):
     t = time.time()
     while (t - start) <= maxtime:
         #TODO: maybe use queue based events as described here: https://www.raspberrypi.org/forums/viewtopic.php?t=178212
-        if interrupted:            
+        if interrupted:
+            print('INTERRUPTED!!')
             motor.setCurrentRPM(0)
             print('not running ')
             motor.turnOff()
