@@ -232,19 +232,19 @@ def main():
 
     thread1.start()
     thread2.start()
-	
+
     if mode == 'voice':
         models = [modelsPath + f for f in listdir(modelsPath) if isfile(join(modelsPath, f))]
         #models = []
         
-        print('Voice models: ' + models)
+        print('Voice models: ', models)
         
         #Don't need a callback the interrupt_check set the flag that will trigger handle the words
         callbacks = []
         for m in models:
             callbacks.append(lambda: recognition_callback)
 
-        print('callbacks: ' + callbacks)
+        print('callbacks: ', callbacks)
             
         # capture SIGINT signal, e.g., Ctrl+C
         signal.signal(signal.SIGINT, signal_handler)
