@@ -213,13 +213,6 @@ def runMotor2(motor, start, maxtime, numStepsPerLoop = 1):
                 continue
 
             motor.setCurrentRPM(rpm)
-            #else:
-            #    currentRPM = normalRPMFunction(t, start)
-                
-                #Create lambda function
-                #slowDownRPMFunction = lambda t, start, currentRPM: slowdown_RPM_function(t, start, currentRPM, slowDownTime, interruptedTime)
-             #   slowDownInitComplete = True
-             #   continue
         else:
             rpm = normal_RPM_function(t, start)
             
@@ -228,6 +221,8 @@ def runMotor2(motor, start, maxtime, numStepsPerLoop = 1):
                 time.sleep(0.05)
                 t = time.time()
                 continue
+                
+            motor.setCurrentRPM(rpm)
                 
         print(motor.name + ' delay: ' + str(motor.delay))
         
