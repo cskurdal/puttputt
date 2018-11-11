@@ -139,10 +139,11 @@ def runMotor1(motor, start, maxtime, numStepsPerLoop = 1):
     #this will be calculated based on the current RPM
     slowDownRPMFunction = lambda t, start, currentRPM: slowdown_RPM_function(t, start, currentRPM, slowDownTime, interruptedTime)
     
+    rpm = 0
     t = time.time()
     while (t - start) <= maxtime:
         if interrupted:
-            print('INTERRUPTED!!')
+            print('1 INTERRUPTED!!')
             rpm = slowDownRPMFunction(t, start, rpm)
                 
             #If rpm is 0 then just sleep
@@ -173,8 +174,8 @@ def runMotor1(motor, start, maxtime, numStepsPerLoop = 1):
         print(motor.name + ' delay: ' + str(motor.delay))
         
         #rpm / math.abs(rpm) will reverse motor direction if RPM is a - value
-        if False:
-            motor.stepWithTurnOffAndSleep(numStepsPerLoop * int(rpm / abs(rpm)), turnOff = False)
+        if True:
+            motor.stepWithTurnOffAndSleep(numStepsPerLoop * int(rpm / abs(rpm)), turnOff = True)
         else:
             motor.step(numStepsPerLoop * int(rpm / abs(rpm)), turnOff = True)
             
@@ -194,11 +195,29 @@ def runMotor2(motor, start, maxtime, numStepsPerLoop = 1):
     if reverseMotor2:
         numStepsPerLoop *= -1
         
+    rpm = 0
     t = time.time()
     while (t - start) <= maxtime:
-        #TODO: maybe use queue based events as described here: https://www.raspberrypi.org/forums/viewtopic.php?t=178212
         if interrupted:
             print('2 INTERRUPTED!!')
+            rpm = slowDownRPMFunction(t, start, rpm)
+                
+            #If rpm is 0 then just sleep
+            if rpm == 0:                    
+                time.sleep(0.05)
+                t = time.time()
+                continue
+
+            motor.setCurrentRPM(rpm)
+            #else:
+            #    currentRPM = normalRPMFunction(t, start)
+                
+                #Create lambda function
+                #slowDownRPMFunction = lambda t, start, currentRPM: slowdown_RPM_function(t, start, currentRPM, slowDownTime, interruptedTime)
+             #   slowDownInitComplete = True
+             #   continue
+        else:
+            rpm = normalRPMFunction(t, start)
             
             #If rpm is 0 then just sleep
             if rpm == 0:                    
@@ -206,19 +225,13 @@ def runMotor2(motor, start, maxtime, numStepsPerLoop = 1):
                 t = time.time()
                 continue
                 
-            print('not running ')
-            motor.turnOff()
-            
-            notRunTime = 10
-        else:
-            motor.setCurrentRPM(30 + 30 * math.sin((t - start) / (2*math.pi))) #Osilates from 0-60 RPM every minute
-            
         print(motor.name + ' delay: ' + str(motor.delay))
         
+        #rpm / math.abs(rpm) will reverse motor direction if RPM is a - value
         if False:
-            motor.stepWithTurnOffAndSleep(numStepsPerLoop, turnOff = False)
+            motor.stepWithTurnOffAndSleep(numStepsPerLoop * int(rpm / abs(rpm)), turnOff = False)
         else:
-            motor.step(numStepsPerLoop, turnOff = True)
+            motor.step(numStepsPerLoop * int(rpm / abs(rpm)), turnOff = True)
             
         t = time.time()
         
