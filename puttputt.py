@@ -11,7 +11,7 @@ from os.path import isfile, join
 modelsPath = './resources/models/'
 interrupted = False
 
-def regcognition_callback():
+def recognition_callback():
     global interrupted
     interrupted = True
     print('recongnition_callback')
@@ -73,7 +73,7 @@ GPIO11 (23) (24) GPIO8
 
 try:
     import RPi.GPIO as GPIO
-	
+
     isRpi = True
 except ImportError:
     print('Not RaspberryPi')
@@ -106,11 +106,11 @@ class VelocityRPM(object):
             return 60 / (self._currentRPM * self._stepsPerRev)
         else: #linear acceleration
             return (((self._startTime + t) / (self._startTime + self._seconds)) * 60) / (self._currentRPM * self._stepsPerRev)
-	
+
         
 def runMotor1(motor, start, maxtime, numStepsPerLoop = 1):
     global delay1, reverseMotor1, slowDown1, thread1Done, interrupted
-	
+
     numStepsPerLoop = numStepsPerLoop
     
     #Reverse
@@ -159,7 +159,7 @@ def runMotor1(motor, start, maxtime, numStepsPerLoop = 1):
         
 def runMotor2(motor, start, maxtime, numStepsPerLoop = 1):
     global delay2, reverseMotor2, slowDown2, thread2Done, interrupted
-	
+
     numStepsPerLoop = numStepsPerLoop
     
     motor.delay = delay2
@@ -242,7 +242,7 @@ def main():
         #Don't need a callback the interrupt_check set the flag that will trigger handle the words
         callbacks = []
         for m in models:
-            callbacks.append(lambda: regcognition_callback)
+            callbacks.append(recognition_callback())
 
         # capture SIGINT signal, e.g., Ctrl+C
         signal.signal(signal.SIGINT, signal_handler)
