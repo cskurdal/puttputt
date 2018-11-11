@@ -19,16 +19,19 @@ def normal_RPM_function(t, start):
 def slowdown_RPM_function(t, start, currentRPM, slowDownTime, interruptedTime):
     global interrupted
     
-    if t <= (start + interruptedTime):
+    if t <= (start + slowDownTime):
         return (-currentRPM / slowDownTime) + currentRPM
-    else:        
-        interrupted = False
+    else:
+        #When start + slow down and interrupted time is elasped then restart
+        if t > (start + slowDownTime + interruptedTime)
+            interrupted = False
+            
         return 0
     
 def recognition_callback():
     global interrupted
     interrupted = True
-    print('recongnition_callback')
+    print('recognition_callback')
 
 def signal_handler(signal, frame):
     global interrupted
