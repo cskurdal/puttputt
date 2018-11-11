@@ -176,7 +176,7 @@ def runMotor1(motor, start, maxtime, numStepsPerLoop = 1):
         
         #rpm / math.abs(rpm) will reverse motor direction if RPM is a - value
         if True:
-            motor.stepWithTurnOffAndSleep(numStepsPerLoop * int(rpm / abs(rpm)), turnOff = True)
+            motor.stepWithTurnOffAndSleep(numStepsPerLoop * int(rpm / abs(rpm)), turnOff = False)
         else:
             motor.step(numStepsPerLoop * int(rpm / abs(rpm)), turnOff = True)
             
