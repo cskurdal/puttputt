@@ -11,6 +11,9 @@ from os.path import isfile, join
 modelsPath = './resources/models/'
 interrupted = False
 
+def snowboy_callback()
+    print('SNOWBOY!!')
+
 def recognition_callback():
     global interrupted
     interrupted = True
@@ -243,13 +246,10 @@ def main():
         callbacks = []
         for m in models:
             callbacks.append(lambda: recognition_callback)
-
-        print('callbacks: ', callbacks)
             
-        callbacks = [lambda: snowboydecoder.play_audio_file(snowboydecoder.DETECT_DING),
-                     lambda: snowboydecoder.play_audio_file(snowboydecoder.DETECT_DONG)]
+        #callbacks = [lambda: snowboydecoder.play_audio_file(snowboydecoder.DETECT_DING), lambda: snowboydecoder.play_audio_file(snowboydecoder.DETECT_DONG)]
         
-        callbacks = [lambda: recognition_callback, lambda: recognition_callback]
+        callbacks = [lambda: snowboy_callback, lambda: recognition_callback]
         
         # capture SIGINT signal, e.g., Ctrl+C
         signal.signal(signal.SIGINT, signal_handler)
