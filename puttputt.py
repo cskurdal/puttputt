@@ -11,7 +11,13 @@ from os.path import isfile, join
 modelsPath = './resources/models/'
 interrupted = False
 
-
+def slowdown_RPM_function(t, start, currentRPM, slowDownTime, interruptedTime):
+    if (t <= (start + interruptedTime)):
+        return -currentRPM / slowDownTime) + currentRPM
+    else:        
+        interrupted = False
+        return 0
+    
 def recognition_callback():
     global interrupted
     interrupted = True
@@ -116,30 +122,37 @@ def runMotor1(motor, start, maxtime, numStepsPerLoop = 1):
     
     #Reverse
     motor.delay = delay1
-    slowDownInitComplete = False
     slowDownCountdown = 0
         
     if reverseMotor1:
         numStepsPerLoop *= -1
         
+    interruptedTime = 5 #time interrupted
+    slowDownTime = 2 #seconds to stop
+    
     normalRPMFunction = lambda t, start: 30 + 30 * math.sin((t - start) / (2 * math.pi))
-    slowDownRPMFunction = lambda t, start: 0 #this will be calculated based on the current RPM
-        
+    #this will be calculated based on the current RPM
+    slowDownRPMFunction = lambda t, start, currentRPM: slowdown_RPM_function(t, start, currentRPM, slowDownTime, interruptedTime)
+    
     t = time.time()
     while (t - start) <= maxtime:
         if interrupted:
             print('INTERRUPTED!!')
-            if slowDownInitComplete:
-                rpm = slowDownRPMFunction(t, start)
-                motor.setCurrentRPM(rpm)
-            else:
-                currentRPM = normalRPMFunction(t, start)
-                slowDownTime = 2 #seconds
+            rpm = slowDownRPMFunction(t, start, currentRPM)
+                
+            if rpm == 0:                    
+                time.sleep(0.05)
+                t = time.time()
+                continue
+
+            motor.setCurrentRPM(rpm)
+            #else:
+            #    currentRPM = normalRPMFunction(t, start)
                 
                 #Create lambda function
-                slowDownRPMFunction = lambda t, start: (-currentRPM / slowDownTime) + currentRPM
-                slowDownInitComplete = True
-                continue
+                #slowDownRPMFunction = lambda t, start, currentRPM: slowdown_RPM_function(t, start, currentRPM, slowDownTime, interruptedTime)
+             #   slowDownInitComplete = True
+             #   continue
         else:
             rpm = normalRPMFunction(t, start)
             motor.setCurrentRPM(rpm) #Osilates from 0-60 RPM every minute
