@@ -11,6 +11,11 @@ from os.path import isfile, join
 modelsPath = './resources/models/'
 interrupted = False
 
+
+def normal_RPM_function(t, start):
+    rpm = 30 + 30 * math.sin((t - start) / (2 * math.pi))
+    return rpm
+
 def slowdown_RPM_function(t, start, currentRPM, slowDownTime, interruptedTime):
     if t <= (start + interruptedTime):
         return (-currentRPM / slowDownTime) + currentRPM
@@ -130,7 +135,7 @@ def runMotor1(motor, start, maxtime, numStepsPerLoop = 1):
     interruptedTime = 5 #time interrupted
     slowDownTime = 2 #seconds to stop
     
-    normalRPMFunction = lambda t, start: 30 + 30 * math.sin((t - start) / (2 * math.pi))
+    normalRPMFunction = lambda t, start: normal_RPM_function(t, start)
     #this will be calculated based on the current RPM
     slowDownRPMFunction = lambda t, start, currentRPM: slowdown_RPM_function(t, start, currentRPM, slowDownTime, interruptedTime)
     
@@ -138,8 +143,9 @@ def runMotor1(motor, start, maxtime, numStepsPerLoop = 1):
     while (t - start) <= maxtime:
         if interrupted:
             print('INTERRUPTED!!')
-            rpm = slowDownRPMFunction(t, start, currentRPM)
+            rpm = slowDownRPMFunction(t, start, rpm)
                 
+            #If rpm is 0 then just sleep
             if rpm == 0:                    
                 time.sleep(0.05)
                 t = time.time()
@@ -155,6 +161,13 @@ def runMotor1(motor, start, maxtime, numStepsPerLoop = 1):
              #   continue
         else:
             rpm = normalRPMFunction(t, start)
+            
+            #If rpm is 0 then just sleep
+            if rpm == 0:                    
+                time.sleep(0.05)
+                t = time.time()
+                continue
+                
             motor.setCurrentRPM(rpm) #Osilates from 0-60 RPM every minute
             
         print(motor.name + ' delay: ' + str(motor.delay))
@@ -185,8 +198,14 @@ def runMotor2(motor, start, maxtime, numStepsPerLoop = 1):
     while (t - start) <= maxtime:
         #TODO: maybe use queue based events as described here: https://www.raspberrypi.org/forums/viewtopic.php?t=178212
         if interrupted:
-            print('INTERRUPTED!!')
-            motor.setCurrentRPM(0)
+            print('2 INTERRUPTED!!')
+            
+            #If rpm is 0 then just sleep
+            if rpm == 0:                    
+                time.sleep(0.05)
+                t = time.time()
+                continue
+                
             print('not running ')
             motor.turnOff()
             
