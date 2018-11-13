@@ -206,9 +206,9 @@ def runMotor2(motor, start, maxtime, numStepsPerLoop = 1):
         if interrupted:
             print('2 INTERRUPTED!!')
             rpm = slowdown_RPM_function(t, start, rpm, slowDownTime, interruptedTime)
-                
-            #If rpm is 0 then just sleep
-            if rpm == 0:
+ 
+            #If rpm is less than 1RPM then just sleep, this keeps the delay from being very large
+            if rpm <= abs(1): 
                 time.sleep(0.05)
                 t = time.time()
                 continue
@@ -216,9 +216,9 @@ def runMotor2(motor, start, maxtime, numStepsPerLoop = 1):
             motor.setCurrentRPM(rpm)
         else:
             rpm = normal_RPM_function(t, start)
-            
-            #If rpm is 0 then just sleep
-            if rpm == 0:                    
+ 
+            #If rpm is less than 1RPM then just sleep, this keeps the delay from being very large
+            if rpm <= abs(1):                 
                 time.sleep(0.05)
                 t = time.time()
                 continue
