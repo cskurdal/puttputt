@@ -19,6 +19,8 @@ def normal_RPM_function(t, start):
 def slowdown_RPM_function(t, start, currentRPM, slowDownTime, interruptedTime):
     global interrupted
     
+    print('slowdown_RPM_function: ', t, start, currentRPM, slowDownTime, interruptedTime)
+    
     if t <= (start + slowDownTime):
         return (-currentRPM / slowDownTime) + currentRPM
     else:
