@@ -278,7 +278,7 @@ def main():
     thread1.start()
     thread2.start()
 
-    if mode == 'voice':
+    while mode == 'voice' and not (thread1Done and thread2Done):
         models = [modelsPath + f for f in listdir(modelsPath) if isfile(join(modelsPath, f))]
         #models = []
         
