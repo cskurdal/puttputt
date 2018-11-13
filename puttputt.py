@@ -25,6 +25,7 @@ def slowdown_RPM_function(t, start, currentRPM, slowDownTime, interruptedTime):
         #When start + slow down and interrupted time is elasped then restart
         if t > (start + slowDownTime + interruptedTime):
             interrupted = False
+            print('set interrupted = False')
             
         return 0
     
@@ -239,7 +240,7 @@ def runMotor2(motor, start, maxtime, numStepsPerLoop = 1):
 
     
 def main():
-    global delay1, delay2, reverseMotor1, reverseMotor2
+    global delay1, delay2, reverseMotor1, reverseMotor2, thread1Done, thread2Done
 
     parser = argparse.ArgumentParser(description='Pi Putt')
 
@@ -278,7 +279,7 @@ def main():
     thread1.start()
     thread2.start()
 
-    while mode == 'voice' and not (thread1Done and thread2Done):
+    if mode == 'voice':
         models = [modelsPath + f for f in listdir(modelsPath) if isfile(join(modelsPath, f))]
         #models = []
         
@@ -298,12 +299,13 @@ def main():
 
         # main loop
         # make sure you have the same numbers of callbacks and models
-        detector.start(detected_callback=callbacks,
-                       interrupt_check=interrupt_callback,
-                       sleep_time=0.03)
+        while not (thread1Done and thread2Done):
+            detector.start(detected_callback=callbacks,
+                           interrupt_check=interrupt_callback,
+                           sleep_time=0.03)
 
-        detector.terminate()
-        print('detector.terminate()')
+            detector.terminate()
+            print('detector.terminate()')
     
     #Wait for threads to complete before exiting. Needed so that GPIO.cleanup can succeed
     thread1.join()
