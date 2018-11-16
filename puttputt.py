@@ -43,6 +43,10 @@ def slowdown_RPM_function(currentTime, start, currentRPM, slowDownTime, interrup
             interruptStart = -1 #reset
             print('set interrupted = False')
             
+        if currentStepCount % 100 != 0:
+            print('align')
+            return 60 #spin to align
+            
         return 0
     
 def recognition_callback():
@@ -189,7 +193,7 @@ def runMotor1(motor, start, maxtime, numStepsPerLoop = 1):
         print(motor.name + ' rpm, delay', rpm, motor.delay)
         
         #rpm / math.abs(rpm) will reverse motor direction if RPM is a - value
-        if True:
+        if False:
             motor.stepWithTurnOffAndSleep(numStepsPerLoop * int(rpm / abs(rpm)), turnOff = False)
         else:
             motor.step(numStepsPerLoop * int(rpm / abs(rpm)), turnOff = True)
