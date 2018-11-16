@@ -21,7 +21,7 @@ def normal_RPM_function(t, start):
 def slowdown_RPM_function(currentTime, start, currentRPM, slowDownTime, interruptedTime, currentStepCount):
     global interrupted, interruptStart
     
-    print('slowdown_RPM_function: ', currentTime, start, currentRPM, slowDownTime, interruptedTime, currentStepCount)
+    #print('slowdown_RPM_function: ', currentTime, start, currentRPM, slowDownTime, interruptedTime, currentStepCount)
     
     if currentTime <= (start + slowDownTime):
         t = slowDownTime - (currentTime - start) #remaining time
@@ -33,7 +33,7 @@ def slowdown_RPM_function(currentTime, start, currentRPM, slowDownTime, interrup
         
         ret_val = (-currentRPM / (currentTime - start)) + currentRPM #mx + b function for 
         
-        print('ret_val, t, a, s', ret_val, t, a, s)
+        #print('ret_val, t, a, s', ret_val, t, a, s)
         
         return ret_val
     else:
@@ -190,13 +190,13 @@ def runMotor1(motor, start, maxtime, numStepsPerLoop = 1):
                 
             motor.setCurrentRPM(rpm) #Osilates from 0-60 RPM every minute
             
-        print(motor.name + ' rpm, delay', rpm, motor.delay)
+        #print(motor.name + ' rpm, delay', rpm, motor.delay)
         
         #rpm / math.abs(rpm) will reverse motor direction if RPM is a - value
         if False:
             motor.stepWithTurnOffAndSleep(numStepsPerLoop * int(rpm / abs(rpm)), turnOff = False)
         else:
-            motor.step(numStepsPerLoop * int(rpm / abs(rpm)), turnOff = True)
+            motor.step(numStepsPerLoop * int(rpm / abs(rpm)), turnOff = False)
             
         t = time.time()
         
@@ -246,13 +246,13 @@ def runMotor2(motor, start, maxtime, numStepsPerLoop = 1):
                 
             motor.setCurrentRPM(rpm)
                 
-        print(motor.name + ' rpm, delay', rpm, motor.delay)
+        #print(motor.name + ' rpm, delay', rpm, motor.delay)
         
         #rpm / math.abs(rpm) will reverse motor direction if RPM is a - value
         if False:
             motor.stepWithTurnOffAndSleep(numStepsPerLoop * int(rpm / abs(rpm)), turnOff = False)
         else:
-            motor.step(numStepsPerLoop * int(rpm / abs(rpm)), turnOff = True)
+            motor.step(numStepsPerLoop * int(rpm / abs(rpm)), turnOff = False)
             
         t = time.time()
         
