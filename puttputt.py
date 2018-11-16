@@ -326,9 +326,11 @@ def main():
             detector.start(detected_callback=callbacks,
                            interrupt_check=interrupt_callback,
                            sleep_time=0.03)
-
-        print('detector.terminate()')
-        detector.terminate()
+            
+            print('detector.terminate()')
+            detector.terminate()
+            
+            time.sleep(0.05) # Pause to we don't immediately restart
     
     print('waiting to join threads and exit')
     #Wait for threads to complete before exiting. Needed so that GPIO.cleanup can succeed
