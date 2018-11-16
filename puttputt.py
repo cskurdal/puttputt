@@ -18,16 +18,25 @@ def normal_RPM_function(t, start):
     return rpm
 
 #start parameter is the interruptStart
-def slowdown_RPM_function(t, start, currentRPM, slowDownTime, interruptedTime):
+def slowdown_RPM_function(currentTime, start, currentRPM, slowDownTime, interruptedTime, currentStepCount):
     global interrupted, interruptStart
     
-    print('slowdown_RPM_function: ', t, start, currentRPM, slowDownTime, interruptedTime)
+    print('slowdown_RPM_function: ', currentTime, start, currentRPM, slowDownTime, interruptedTime)
     
-    if t <= (start + slowDownTime):
-        return (-currentRPM / slowDownTime) + currentRPM
+    if currentTime <= (start + slowDownTime):
+        t = slowDownTime - (currentTime - start) #remaining time
+        a = -currentRPM / t # Acceleration = (vf - vi) / t  (vf=velocity final = 0)
+        s = (currentRPM * t) + (0.5 * a * t * t)
+        
+        print('t, a, s', t, a, s)
+        
+        if currentTime == start:
+            return currentRPM
+        
+        return (-currentRPM / (currentTime - start)) + currentRPM #mx + b function for 
     else:
         #When start + slow down and interrupted time is elasped then restart
-        if t > (start + slowDownTime + interruptedTime):
+        if currentTime > (start + slowDownTime + interruptedTime):
             interrupted = False
             interruptStart = -1 #reset
             print('set interrupted = False')
@@ -155,27 +164,20 @@ def runMotor1(motor, start, maxtime, numStepsPerLoop = 1):
             if interruptStart < start:
                 interruptStart = t
           
-            rpm = slowdown_RPM_function(t, interruptStart, rpm, slowDownTime, interruptedTime)
+            rpm = slowdown_RPM_function(t, interruptStart, rpm, slowDownTime, interruptedTime, motor._steps)
                 
             #If rpm is less than 1RPM then just sleep, this keeps the delay from being very large
-            if rpm <= abs(1):                    
+            if abs(rpm) < 1: #ABS of rpm because it might be negative if going in reverse                 
                 time.sleep(0.05)
                 t = time.time()
                 continue
 
             motor.setCurrentRPM(rpm)
-            #else:
-            #    currentRPM = normalRPMFunction(t, start)
-                
-                #Create lambda function
-                #slowDownRPMFunction = lambda t, start, currentRPM: slowdown_RPM_function(t, start, currentRPM, slowDownTime, interruptedTime)
-             #   slowDownInitComplete = True
-             #   continue
         else:
             rpm = normal_RPM_function(t, start)
             
             #If rpm is less than 1RPM then just sleep, this keeps the delay from being very large
-            if rpm <= abs(1): 
+            if abs(rpm) < 1:
                 time.sleep(0.05)
                 t = time.time()
                 continue
@@ -218,10 +220,10 @@ def runMotor2(motor, start, maxtime, numStepsPerLoop = 1):
             if interruptStart < start:
                 interruptStart = t
                 
-            rpm = slowdown_RPM_function(t, interruptStart, rpm, slowDownTime, interruptedTime)
+            rpm = slowdown_RPM_function(t, interruptStart, rpm, slowDownTime, interruptedTime, motor._steps)
  
             #If rpm is less than 1RPM then just sleep, this keeps the delay from being very large
-            if rpm <= abs(1): 
+            if abs(rpm) < 1: 
                 time.sleep(0.05)
                 t = time.time()
                 continue
@@ -231,7 +233,7 @@ def runMotor2(motor, start, maxtime, numStepsPerLoop = 1):
             rpm = normal_RPM_function(t, start)
  
             #If rpm is less than 1RPM then just sleep, this keeps the delay from being very large
-            if rpm <= abs(1):                 
+            if abs(rpm) < 1: #ABS of rpm because it might be negative if going in reverse
                 time.sleep(0.05)
                 t = time.time()
                 continue
