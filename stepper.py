@@ -20,7 +20,7 @@ class Stepper(Motor):
         else:
             raise Exception('invalid stepType')
         
-        self._position = 0
+        self._steps = 0 #Steps since initializing object
         self._delay = 0.005
         self._stepsPerRev = stepsPerRev
         self._currentRPM = 0
@@ -56,13 +56,13 @@ class Stepper(Motor):
     def step(self, steps, turnOff = True):
         for s in range(steps):
             if steps > 0:
-                self._position += 1 #positive, go forward
+                self._steps += 1 #positive, go forward
             else:
-                self._position -= 1 #if negative, go backwards
+                self._steps -= 1 #if negative, go backwards
                 
-            p = (self._position + len(self._trajectory)) % len(self._trajectory)
+            p = (self._steps + len(self._trajectory)) % len(self._trajectory)
                         
-            #print('position: ', self._position)
+            #print('steps: ', self._steps)
             for o in range(len(self._pins)):
                 GPIO.output(self._pins[o], self._trajectory[p][o])
                 #print(' pin=', self._pins[o], ':', self._trajectory[p][o])
@@ -78,13 +78,13 @@ class Stepper(Motor):
     def stepWithTurnOffAndSleep(self, steps, turnOff = True):
         for s in range(steps):
             if steps > 0:
-                self._position += 1 #positive, go forward
+                self._steps += 1 #positive, go forward
             else:
-                self._position -= 1 #if negative, go backwards
+                self._steps -= 1 #if negative, go backwards
                 
-            p = (self._position + len(self._trajectory)) % len(self._trajectory)
+            p = (self._steps + len(self._trajectory)) % len(self._trajectory)
                         
-            #print('position: ', self._position)
+            #print('steps: ', self._steps)
             for o in range(len(self._pins)):
                 GPIO.output(self._pins[o], self._trajectory[p][o])
                 #print(' pin=', self._pins[o], ':', self._trajectory[p][o])
