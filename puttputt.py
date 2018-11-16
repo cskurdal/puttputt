@@ -31,11 +31,12 @@ def slowdown_RPM_function(currentTime, start, currentRPM, slowDownTime, interrup
         if currentTime == start:
             return currentRPM
         
-        ret_val = (-currentRPM / (currentTime - start)) + currentRPM #mx + b function for 
+        rpm = (-currentRPM / t) + currentRPM 
+        #rpm = (-currentRPM / slowDownTime) + currentRPM #mx + b function for 
         
         print('ret_val, t, a, s', ret_val, t, a, s)
         
-        return ret_val
+        return rpm
     else:
         #When start + slow down and interrupted time is elasped then restart
         if currentTime > (start + slowDownTime + interruptedTime):
