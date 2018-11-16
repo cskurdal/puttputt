@@ -322,17 +322,20 @@ def main():
         # main loop
         # make sure you have the same numbers of callbacks and models
         while not (thread1Done and thread2Done):
+            print('starting detector')
             detector.start(detected_callback=callbacks,
                            interrupt_check=interrupt_callback,
                            sleep_time=0.03)
 
-            detector.terminate()
             print('detector.terminate()')
+            detector.terminate()
     
+    print('waiting to join threads and exit')
     #Wait for threads to complete before exiting. Needed so that GPIO.cleanup can succeed
     thread1.join()
     thread2.join()
         
+    print('exiting')
        
        
 #---------------------------------------------------
