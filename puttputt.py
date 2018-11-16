@@ -31,8 +31,8 @@ def slowdown_RPM_function(currentTime, start, currentRPM, slowDownTime, interrup
         if currentTime == start:
             return currentRPM
         
-        rpm = (-currentRPM / t) + currentRPM 
-        #rpm = (-currentRPM / slowDownTime) + currentRPM #mx + b function for 
+        #rpm = (-currentRPM / t) + currentRPM 
+        rpm = (-currentRPM / slowDownTime) + currentRPM #mx + b function for 
         
         print('rpm, t, a, s', rpm, t, a, s)
         
