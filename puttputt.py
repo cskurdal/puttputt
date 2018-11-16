@@ -190,7 +190,7 @@ def runMotor1(motor, start, maxtime, numStepsPerLoop = 1):
                 
             motor.setCurrentRPM(rpm) #Osilates from 0-60 RPM every minute
             
-        #print(motor.name + ' rpm, delay', rpm, motor.delay)
+        print(motor.name + ' rpm: ' + str(rpm))
         
         #rpm / math.abs(rpm) will reverse motor direction if RPM is a - value
         if False:
@@ -246,7 +246,7 @@ def runMotor2(motor, start, maxtime, numStepsPerLoop = 1):
                 
             motor.setCurrentRPM(rpm)
                 
-        print(motor.name + ' rpm, delay', rpm, motor.delay)
+        print(motor.name + ' rpm: ' + str(rpm))
         
         #rpm / math.abs(rpm) will reverse motor direction if RPM is a - value
         if False:
