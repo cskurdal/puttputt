@@ -21,19 +21,21 @@ def normal_RPM_function(t, start):
 def slowdown_RPM_function(currentTime, start, currentRPM, slowDownTime, interruptedTime, currentStepCount):
     global interrupted, interruptStart
     
-    print('slowdown_RPM_function: ', currentTime, start, currentRPM, slowDownTime, interruptedTime)
+    print('slowdown_RPM_function: ', currentTime, start, currentRPM, slowDownTime, interruptedTime, currentStepCount)
     
     if currentTime <= (start + slowDownTime):
         t = slowDownTime - (currentTime - start) #remaining time
         a = -currentRPM / t # Acceleration = (vf - vi) / t  (vf=velocity final = 0)
         s = (currentRPM * t) + (0.5 * a * t * t)
         
-        print('t, a, s', t, a, s)
-        
         if currentTime == start:
             return currentRPM
         
-        return (-currentRPM / (currentTime - start)) + currentRPM #mx + b function for 
+        ret_val = (-currentRPM / (currentTime - start)) + currentRPM #mx + b function for 
+        
+        print('ret_val, t, a, s', ret_val, t, a, s)
+        
+        return ret_val
     else:
         #When start + slow down and interrupted time is elasped then restart
         if currentTime > (start + slowDownTime + interruptedTime):
@@ -184,7 +186,7 @@ def runMotor1(motor, start, maxtime, numStepsPerLoop = 1):
                 
             motor.setCurrentRPM(rpm) #Osilates from 0-60 RPM every minute
             
-        print(motor.name + ' delay: ' + str(motor.delay))
+        print(motor.name + ' rpm, delay', rpm, motor.delay)
         
         #rpm / math.abs(rpm) will reverse motor direction if RPM is a - value
         if True:
@@ -211,7 +213,7 @@ def runMotor2(motor, start, maxtime, numStepsPerLoop = 1):
     interruptedTime = 5 #time interrupted
     slowDownTime = 2 #seconds to stop
     
-    rpm = 0
+    rpm = 0.0
     t = time.time()
     while (t - start) <= maxtime:
         if interrupted:
@@ -240,7 +242,7 @@ def runMotor2(motor, start, maxtime, numStepsPerLoop = 1):
                 
             motor.setCurrentRPM(rpm)
                 
-        print(motor.name + ' delay: ' + str(motor.delay))
+        print(motor.name + ' rpm, delay', rpm, motor.delay)
         
         #rpm / math.abs(rpm) will reverse motor direction if RPM is a - value
         if False:
